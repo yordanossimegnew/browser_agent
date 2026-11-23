@@ -1,4 +1,4 @@
-# 02 · Browser Agent
+# Browser Agent
 
 A web research agent that operates a real browser. Ask a question; it searches, opens
 pages, clicks through docs, reads and extracts what it needs, and answers with sources.
@@ -42,7 +42,7 @@ Built with **LangGraph** and **LangChain**, **Playwright** for the browser, serv
 ## Project structure
 
 ```
-02-browser-agent/
+browser-agent/
 ├── README.md
 ├── requirements.txt
 ├── .env.example            # copy to .env (never commit .env)
@@ -87,7 +87,7 @@ Built with **LangGraph** and **LangChain**, **Playwright** for the browser, serv
 ## Setup
 
 ```bash
-cd 02-browser-agent
+cd browser-agent
 python -m venv .venv
 # Windows: .venv\Scripts\activate   |   macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
