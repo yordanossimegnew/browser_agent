@@ -1,0 +1,18 @@
+[
+  {
+    "name": "LangGraph checkpointers",
+    "task": "What checkpointer backends does LangGraph support for persistence, and which one is recommended for production? Use the official docs."
+  },
+  {
+    "name": "Compare free tiers",
+    "task": "Compare the free tiers of Vercel and Netlify: bandwidth, build minutes and serverless limits. Give a table."
+  },
+  {
+    "name": "Python release",
+    "task": "What is the latest stable Python release, when was it released, and what are its three headline features?"
+  },
+  {
+    "name": "Playwright vs Selenium",
+    "task": "Summarise the main differences between Playwright and Selenium for browser automation, citing their official docs."
+  }
+]

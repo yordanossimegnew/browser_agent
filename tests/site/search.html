@@ -1,0 +1,11 @@
+<!doctype html><html><head><title>Search results</title></head>
+<body style="font-family:sans-serif;margin:40px">
+<h1>Results</h1><div id="results"></div>
+<script>
+const q = new URLSearchParams(location.search).get('q') || '';
+document.title = 'Search: ' + q;
+document.getElementById('results').innerHTML =
+  '<p>Results for "' + q.replace(/[<>&]/g, '') + '"</p>' +
+  '<a href="pricing.html">Acme Cloud Pricing</a><br><a href="about.html">About Acme</a>';
+</script>
+</body></html>
