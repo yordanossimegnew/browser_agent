@@ -1,5 +1,7 @@
 # Browser Agent
 
+[![tests](https://github.com/yordanossimegnew/browser_agent/actions/workflows/tests.yml/badge.svg)](https://github.com/yordanossimegnew/browser_agent/actions/workflows/tests.yml)
+
 A web research agent that operates a real browser. Ask a question; it searches, opens
 pages, clicks through docs, reads and extracts what it needs, and answers with sources.
 Built with **LangGraph** and **LangChain**, **Playwright** for the browser, served as a
