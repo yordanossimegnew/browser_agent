@@ -35,11 +35,11 @@ def print_event(event: dict) -> None:
 
 
 def cli(args: argparse.Namespace) -> None:
-    from src.api.runs import RunManager
     from src.agent import open_checkpointer
+    from src.api.runs import RunManager
 
     cfg = load_settings(headless=False if args.show else None)
-    manager = RunManager(cfg, open_checkpointer(cfg.sessions_dir))
+    manager = RunManager(cfg, open_checkpointer(cfg.database_url))
     run = manager.start(args.task)
     print(f"{DIM}run {run.id} · model {cfg.model} · search {cfg.search_url.split('/')[2]}{RESET}")
     for event in manager.stream(run):

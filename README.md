@@ -1,6 +1,6 @@
 # Browser Agent
 
-[![tests](https://github.com/yordanossimegnew/browser_agent/actions/workflows/tests.yml/badge.svg)](https://github.com/yordanossimegnew/browser_agent/actions/workflows/tests.yml)
+[![tests](https://github.com/yordanossimegnew/browser_agent/actions/workflows/tests.yml/badge.svg)](https://github.com/yordanossimegnew/browser_agent/actions/workflows/tests.yml) ![Python 3.12](https://img.shields.io/badge/python-3.12-blue) [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 A web research agent that operates a real browser. Ask a question; it searches, opens
 pages, clicks through docs, reads and extracts what it needs, and answers with sources.
@@ -15,10 +15,17 @@ Built with **LangGraph** and **LangChain**, **Playwright** for the browser, serv
 |---|---|---|
 | ![Live browser](docs/screenshots/live-browser.png) | ![Answer](docs/screenshots/answer.png) | ![Run history](docs/screenshots/run-history.png) |
 
+## Engineering highlights
+
+- Set-of-marks perception: Claude sees a numbered element list, the page text and a screenshot with the same numbers drawn on it, then acts by number. This is more reliable than guessing CSS selectors.
+- Playwright's sync API is tied to one thread, so each run gets its own worker thread and browser; HTTP handlers only read the run's event log.
+- Every step (thought, action, screenshot) streams to the UI over Server-Sent Events while the run is in progress.
+- SSRF guard: private and localhost addresses are blocked unless explicitly allowed.
+
 ## Features
 
 - **LangGraph orchestration:** an `agent` → `browser` → `agent` state graph with conditional routing
-  and a SQLite checkpointer that records every run.
+  and a PostgreSQL checkpointer that records every run.
 - **LangChain `ChatAnthropic`** for Claude (`claude-opus-5-5`, adaptive thinking, vision).
 - **How the agent sees a page:** after every action Claude gets
   1. a numbered list of interactive elements (`[16] link "Persistence - Docs by LangChain"`),
@@ -60,7 +67,7 @@ browser-agent/
 │   │   ├── agent.py        # LangGraph StateGraph: agent + browser nodes, routing
 │   │   ├── executor.py     # runs a browser action -> ToolMessage (text + screenshot)
 │   │   ├── state.py        # graph state, token usage, results
-│   │   └── memory.py       # SQLite checkpointer, transcript export
+│   │   └── memory.py       # PostgreSQL checkpointer, transcript export
 │   ├── tools/
 │   │   ├── browser.py      # Playwright session, element labelling, screenshots, SSRF guard
 │   │   ├── actions.py      # the 7 tools the model can call
@@ -94,7 +101,15 @@ python -m venv .venv
 # Windows: .venv\Scripts\activate   |   macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
 python -m playwright install chromium
-cp .env.example .env              # then put your ANTHROPIC_API_KEY in .env
+cp .env.example .env              # set ANTHROPIC_API_KEY, DATABASE_URL and TEST_DATABASE_URL
+```
+
+Create the two PostgreSQL databases once (in psql or pgAdmin). LangGraph creates its checkpoint
+tables on first start:
+
+```sql
+CREATE DATABASE browser_agent;
+CREATE DATABASE browser_agent_test;   -- used only by pytest
 ```
 
 ## Run the API
@@ -189,7 +204,7 @@ graph LR
    screenshot. The result goes back as a `ToolMessage` containing text and an image.
 3. **Events:** both nodes emit events (thought, action, observation) that the API streams to
    the UI as they happen.
-4. **Checkpointing:** the SQLite checkpointer saves state after every node, keyed by `run_id`.
+4. **Checkpointing:** the PostgreSQL checkpointer saves state after every node, keyed by `run_id`.
 
 Playwright's sync API is tied to the thread that started it, so each run gets its own worker
 thread and browser ([`src/api/runs.py`](src/api/runs.py)). HTTP handlers only read the event log.

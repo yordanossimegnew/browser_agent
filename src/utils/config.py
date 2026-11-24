@@ -38,7 +38,7 @@ class Settings:
     max_concurrent_runs: int = 2
     log_level: str = "INFO"
     log_dir: Path = PROJECT_ROOT / "logs"
-    sessions_dir: Path = PROJECT_ROOT / "data" / "sessions"
+    database_url: str = "postgresql://postgres:postgres@localhost:5432/browser_agent"
     knowledge_base_dir: Path = PROJECT_ROOT / "data" / "knowledge_base"
 
 
@@ -57,5 +57,6 @@ def load_settings(**overrides) -> Settings:
         blocked_domains=_env_list("BROWSER_BLOCKED_DOMAINS"),
         max_concurrent_runs=int(os.getenv("MAX_CONCURRENT_RUNS", Settings.max_concurrent_runs)),
         log_level=os.getenv("LOG_LEVEL", Settings.log_level),
+        database_url=os.getenv("DATABASE_URL", Settings.database_url),
     )
     return replace(settings, **{k: v for k, v in overrides.items() if v is not None})

@@ -1,14 +1,14 @@
-"""Run memory: a LangGraph SQLite checkpointer, one thread per run."""
+"""Run memory: a LangGraph PostgreSQL checkpointer, one thread per run."""
 
 from __future__ import annotations
 
 import re
-import sqlite3
-from pathlib import Path
 from typing import Any
 
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
-from langgraph.checkpoint.sqlite import SqliteSaver
+from langgraph.checkpoint.postgres import PostgresSaver
+from psycopg.rows import dict_row
+from psycopg_pool import ConnectionPool
 
 _SAFE_ID = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 
@@ -19,11 +19,12 @@ def validate_run_id(run_id: str) -> str:
     return run_id
 
 
-def open_checkpointer(directory: Path) -> SqliteSaver:
-    directory = Path(directory)
-    directory.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(directory / "runs.sqlite", check_same_thread=False)
-    saver = SqliteSaver(conn)
+def open_checkpointer(database_url: str) -> PostgresSaver:
+    """Connection-pooled LangGraph checkpointer; creates its tables on first use."""
+    conninfo = database_url.replace("postgresql+psycopg://", "postgresql://")
+    pool = ConnectionPool(conninfo, min_size=1, max_size=10, open=True,
+                          kwargs={"autocommit": True, "prepare_threshold": 0, "row_factory": dict_row})
+    saver = PostgresSaver(pool)
     saver.setup()
     return saver
 

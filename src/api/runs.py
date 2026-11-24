@@ -82,7 +82,7 @@ class RunManager:
         index = start
         while True:
             with run.cond:
-                run.cond.wait_for(lambda: len(run.events) > index or run.finished, timeout=keepalive)
+                run.cond.wait_for(lambda: len(run.events) > index or run.finished, timeout=keepalive)  # noqa: B023 (called before index changes)
                 batch = run.events[index:]
                 done = run.finished
             if not batch:

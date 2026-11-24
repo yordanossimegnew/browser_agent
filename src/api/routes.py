@@ -22,7 +22,7 @@ def create_app(
 ) -> FastAPI:
     settings = settings or load_settings()
     app = FastAPI(title="Browser Agent", version="1.0.0")
-    checkpointer = open_checkpointer(settings.sessions_dir)
+    checkpointer = open_checkpointer(settings.database_url)
     runs = RunManager(settings, checkpointer, llm_factory=llm_factory, browser_factory=browser_factory)
     app.state.runs = runs
 

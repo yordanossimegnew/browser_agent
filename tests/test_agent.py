@@ -13,7 +13,7 @@ def run_agent(settings, script):
     events = []
     llm = FakeLLM(script)
     with BrowserSession(settings) as browser:
-        agent = build_agent(settings, browser, open_checkpointer(settings.sessions_dir),
+        agent = build_agent(settings, browser, open_checkpointer(settings.database_url),
                             on_event=events.append, llm=llm)
         result = agent.run("What does Acme Cloud Pro cost?")
     return result, llm, events, agent
